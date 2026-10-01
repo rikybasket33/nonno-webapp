@@ -1,0 +1,17 @@
+{
+  "name": "Il tasto del nonno",
+  "short_name": "Tasto",
+  "description": "Dove porta il tasto del nonno, chi l'ha premuto, cosa va in onda.",
+  "lang": "it",
+  "start_url": "./#/home",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f1ea",
+  "theme_color": "#2f7d4f",
+  "icons": [
+    {"src": "icone/icona-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icone/icona-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icone/icona.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}
+  ]
+}

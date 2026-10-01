@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<!-- La webapp del tasto del nonno (1/10/2026). Tutto e' qui dentro e accanto:
+     niente font, librerie o immagini da internet, perche' deve funzionare anche
+     sulla rete di casa senza collegamento. Si prova da file:// con ?finto=1. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0c" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tasto">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="Il tasto del nonno: dove porta, chi l'ha premuto, cosa va in onda.">
+<title>Il tasto del nonno - demo</title>
+<script>
+  // il manifest serve solo servito dal PC di casa: da file:// Chrome lo blocca (e lo dice in console)
+  if (location.protocol !== 'file:') document.write('<link rel="manifest" href="manifest.webmanifest">');
+</script>
+<link rel="icon" href="icone/icona.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone/apple-touch-icon.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="barra-su" id="barraSu"></header>
+<div class="banda" id="banda" role="status" hidden></div>
+<div id="app"><main id="vista"></main></div>
+<nav class="schede" id="schede" aria-label="Sezioni"></nav>
+<div id="avvisi" aria-live="polite"></div>
+<noscript><p style="padding:24px;font:17px system-ui">Per usare il tasto serve JavaScript acceso.</p></noscript>
+<script>
+  // QUESTA E' LA COPIA DIMOSTRATIVA (GitHub Pages): mock.js entra SEMPRE.
+  // Qui non c'e' nessun servizio da chiamare - Pages serve file statici - e
+  // senza il finto la webapp chiederebbe /api/* a github.io, prendendo 404.
+  // Nel repository vero (progetto-nonno) questa riga e' sotto ?finto=1.
+  document.write('<script src="mock.js"><\/script>');
+</script>
+<script src="app.js"></script>
+</body>
+</html>
