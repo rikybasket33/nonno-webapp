@@ -286,7 +286,36 @@ function carica(chiave, percorso, estrai = x => x) {
   return (inVolo[chiave] = p);
 }
 const caricaTasto = () => carica('tasto', '/api/tasto');
-const caricaScelte = () => carica('scelte', '/api/scelte');
+/* LA GUIDA DAL TELEFONO (3/10/2026). DAZN risponde 403 al server (scarta i
+   datacenter) ma da' la guida a qualunque browser (CORS "*"). Se il servizio
+   dice "guida_mancante", la scarica il telefono - dalla sua rete, che DAZN
+   accetta - e gliela consegna ridotta ai campi che servono (POST /api/guida);
+   poi si richiedono le scelte, che il servizio costruisce come sempre. Una
+   volta ogni 10 minuti al massimo: se DAZN non risponde nemmeno al telefono,
+   resta il messaggio di sempre. */
+const GUIDA_DAZN = 'https://epg.discovery.indazn.com/eu/v6/epgWithDatesRange';
+let guidaPortata = 0;
+async function portaGuida() {
+  if (Date.now() - guidaPortata < 600000) return false;
+  guidaPortata = Date.now();
+  const giorno = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+  const r = await fetch(GUIDA_DAZN + '?country=it&languageCode=it&startDate=' + giorno(0) + '&endDate=' + giorno(3),
+    { mode: 'cors', credentials: 'omit', headers: { Accept: 'application/json' } });
+  if (!r.ok) throw new ErroreApi(r.status, 'DAZN non risponde nemmeno al telefono (' + r.status + ').');
+  const tessere = ((await r.json()).Tiles || []).map(t => ({
+    EventId: t.EventId, Title: t.Title, Type: t.Type, IsLinear: !!t.IsLinear, Start: t.Start, End: t.End,
+    Sport: { Title: (t.Sport && t.Sport.Title) || '' }, Competition: { Title: (t.Competition && t.Competition.Title) || '' },
+    Contestants: (t.Contestants || []).slice(0, 4).map(c => ({ Id: c.Id, Title: c.Title })),
+  }));
+  await api('/api/guida', { metodo: 'POST', corpo: { tessere } });
+  return true;
+}
+const caricaScelte = () => carica('scelte', '/api/scelte').then(async d => {
+  if (!d || !d.guida_mancante) return d;
+  if (!(await portaGuida())) throw new ErroreApi(503, 'la guida non c\'è ancora: riprova fra qualche minuto.');
+  delete S.scelte;
+  return carica('scelte', '/api/scelte');
+});
 const caricaApp = () => carica('app', '/api/app', d => d.app || []);
 const caricaPalinsesto = () => carica('palinsesto', '/api/palinsesto', d => d.eventi || []);
 const caricaProfili = () => carica('profili', '/api/profili', d => d.profili || []);
@@ -570,7 +599,7 @@ function impostaBarra({ titolo = '', indietro = null, azione = null } = {}) {
     h('a', { class: 'barra-indietro', href: indietro.href, onclick: () => { document.documentElement.dataset.dir = 'indietro'; } },
       ic('indietro'), h('span', null, indietro.testo)));
   barraEl.replaceChildren(sx, h('div', { class: 'barra-titolo', 'aria-hidden': 'true' }, titolo), h('div', { class: 'barra-dx' }, azione));
-  document.title = titolo ? titolo + ' · Il tasto del nonno' : 'Il tasto del nonno';
+  document.title = titolo ? titolo + ' · Telecomando Nonno' : 'Telecomando Nonno';
 }
 
 function titoloGrande(occhiello, titolo, destra) {
@@ -717,7 +746,7 @@ function vistaProfili(v, arg, c) {
   const griglia = h('div', { class: 'griglia-profili' });
   const piede = h('div', { class: 'profili-piede' });
   v.append(
-    h('div', { class: 'marchio' }, ic('tasto')),
+    h('img', { class: 'marchio', src: 'icone/icona.svg?v=2', alt: 'Telecomando Nonno', width: 72, height: 72 }),
     h('h1', null, 'Chi usa il tasto?'),
     h('p', { class: 'sotto' }, 'Il telecomando del nonno, dal tuo telefono.'),
     griglia, piede);
@@ -908,7 +937,7 @@ function apriProfilo() {
         h('a', { class: 'riga tocca', href: '#/profili', onclick: () => f.chiudi() }, h('span', { class: 'ic-tondo' }, ic('scambia')),
           h('span', { class: 'corpo' }, h('span', { class: 't1' }, 'Cambia profilo')), ic('avanti', 'chev')),
         esci),
-      h('p', { class: 'nota centro', style: { 'margin-top': '22px' } }, 'Progetto Nonno · il tasto del nonno'));
+      h('p', { class: 'nota centro', style: { 'margin-top': '22px' } }, 'Progetto Nonno · Telecomando Nonno'));
   } });
 }
 

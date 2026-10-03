@@ -1,4 +1,4 @@
-# Il tasto del nonno — demo della webapp
+# Telecomando Nonno — demo della webapp
 
 **Demo:** https://rikybasket33.github.io/nonno-webapp/
 
@@ -33,7 +33,8 @@ Non è una scelta: la webapp vera **non potrebbe** funzionare da qui, per tre mo
    non c'è niente da raggiungere.
 
 Per la webapp vera raggiungibile da fuori casa serve un servizio in HTTPS su un indirizzo pubblico.
-È la strada prevista, e non passa da Pages.
+È la strada presa: **dal 3/10/2026 la webapp vera è online**, su un server in Italia, in HTTPS e
+con i profili approvati dall'admin. Il suo indirizzo non sta qui: questa resta la vetrina.
 
 ---
 
